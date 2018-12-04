@@ -125,3 +125,38 @@ hold on
 %axis([0,100,0,1.1*max(abs(Xnotch))]);
 plot(absYnotch(1:round(N/10)))
 legend();
+
+%Notch filter zelf gedesigned
+%Ingezoomde FFT 
+onotch = designedNotch(signal1);
+Znotch = fft(onotch);
+absZnotch = abs(Znotch);
+figure
+axis([0,100,0,1.1*max(absX)]);
+plot(absX(1:round(N/10)))
+hold on
+plot(absZnotch(1:round(N/10)))
+title("Ingezoomt tussen 0Hz en 100Hz, met designed notch filter");
+xlabel("Frequentie (Hz)");
+legend();
+
+%FFT met gedesignde notch maken
+figure
+plot(absX)
+title("FFT van signal1");
+xlabel("Frequentie (Hz)");
+hold on
+plot(absZnotch)
+legend();
+
+%notch filter op signaal in de tijd
+figure
+plot(time1,signal1)
+axis([0,totaltime1,1.1*ymin1,1.1*ymax1]);
+title("Het originele signaal en het genotchte signaal");
+xlabel("Tijd in s");
+hold on
+plot(time1, onotch)
+legend();
+
+
