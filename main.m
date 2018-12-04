@@ -1,5 +1,6 @@
 close all
 clc
+% Eerste opdracht, de twee signalen plotten in de tijd
 tabel = load('ecg.mat');
 tabel2 = load('ecg.mat');
 
@@ -32,3 +33,24 @@ time2 = linspace(0,totaltime2,m2);
 plot(time2,signal2)
 axis([0,totaltime2,1.1*ymin2,1.1*ymax2]);
 xlabel("Time in s");
+
+%FFT maken
+X = fft(signal1);
+Xreal = real(X);
+Xcomp = imag(X);
+absX = abs(X);
+N = length(absX);
+figure
+subplot(1,2,1)
+plot(absX)
+title("FFT van signal1");
+xlabel("Frequentie (Hz)");
+
+%ingezoomde FFT
+subplot(1,2,2);
+axis([0,100,0,1.1*max(absX)]);
+plot(absX(1:round(N/10)))
+title("Ingezoomt tussen 0Hz en 100Hz");
+xlabel("Frequentie (Hz)");
+
+
