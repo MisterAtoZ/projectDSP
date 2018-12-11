@@ -4,27 +4,27 @@ signal = tabel.ecg;
 
 fs = 1000;             %#sampling rate
 f0 = 60;                %#notch frequency
-fn = fs/2;              %#Nyquist frequency
+fn = fs/2;              %de maximum frequentie die kan worden gehaald worden zonder aliasing
+notchWidth = 0.9;
 freqRatio = f0/fn;      %#ratio of notch freq. to Nyquist freq.
 
-%Hoe breder deze wordt genomen, hoe meer frequenties errond ook worden
-%verzwakt
-notchWidth = 0.09;       %#width of the notch
+%de juiste hoek zoeken van de nulpunten en polen
+hoek = (pi/fn) * f0;
+reelDeel = cos(hoek);
+imagDeel = sin(hoek);
 
-%Compute zeros
-notchZeros = [exp( sqrt(-1)*pi*freqRatio ), exp( -sqrt(-1)*pi*freqRatio )];
+nulp1 = reelDeel + imagDeel*i; %hier is waarsch wel een simpelere manier voor
+nulp2 = reelDeel - imagDeel*i;
+pool1 = notchWidth*nulp1;
+pool2 = notchWidth*nulp2;
 
-%#Compute poles
-notchPoles = (1-notchWidth) * notchZeros;
+zplane(nulp1,pool1)
+figure
+zplane(nulp2,pool2)
 
-figure;
-zplane(notchZeros.', notchPoles.');
+%de TF van de filter wordt dan
+%H = ((z-nulp1)*(z-nulp2))/((z-pool1)*(z-pool2));
 
-b = poly( notchZeros ); %# Get moving average filter coefficients
-a = poly( notchPoles ); %# Get autoregressive filter coefficients
+%Deze filter toepassen op signal
 
-figure;
-freqz(b,a,32000,fs)
 
-%#filter signal x
-y = filter(b,a,signal);

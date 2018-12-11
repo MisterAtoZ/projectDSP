@@ -52,13 +52,15 @@ axis([0,100,0,1.1*max(absX)]);
 plot(absX(1:round(N/10)))
 title("Ingezoomt tussen 0Hz en 100Hz");
 xlabel("Frequentie (Hz)");
+%==========================================================================
+%Notch filter invoegen
 
-%Notch filter zelf
+%Notch filter zelf gemaakt
 fs = 1000;
-f0 = 50;
-notchWidth = 0.01;
-lnotch = notch(signal1, fs, f0, notchWidth);
-mnotch = notch(lnotch, fs, 60, notchWidth);
+f0 = 60;
+notchWidth = 0.9;
+lnotch = notch(signal1, fs1, f0, notchWidth);
+mnotch = notch(lnotch, fs1, f0, notchWidth); %geen idee waarom er twee keer wordt genotched hier
 Xnotch = fft(mnotch);
 absXnotch = abs(Xnotch);
 hold on
@@ -89,74 +91,74 @@ hold on
 plot(time1, mnotch)
 legend();
 
-%notch filter van matlab
-wo = 60/(fs1/2); %deze filter lijkt zelfs niet te werken 
-bw = wo/35;
-[c d] = iirnotch(wo,bw);
+% %notch filter van matlab
+% wo = 60/(fs1/2); %deze filter lijkt zelfs niet te werken 
+% bw = wo/35;
+% [c,d] = iirnotch(wo,bw);
+% 
+% nnotch = filter(c,d,signal1);
+% figure 
+% plot(time1,signal1)
+% axis([0,totaltime1,1.1*ymin1,1.1*ymax1]);
+% title("Het originele signaal en het 2de genotchte signaal");
+% xlabel("Tijd in s");
+% hold on
+% plot(time1, nnotch)
+% legend();
+% 
+% %FFT van matlabnotch volledig
+% Ynotch = fft(nnotch);
+% absYnotch = abs(Ynotch);
+% figure
+% plot(absX)
+% title("FFT van signal1, met de notch van matlab");
+% xlabel("Frequentie (Hz)");
+% hold on
+% plot(absYnotch)
+% legend();
+% 
+% %FFT van matlabnotch ingezoomed
+% figure
+% axis([0,100,0,1.1*max(absX)]);
+% plot(absX(1:round(N/10)))
+% title("Ingezoomt tussen 0Hz en 100Hz");
+% xlabel("Frequentie (Hz)");
+% hold on
+% %axis([0,100,0,1.1*max(abs(Xnotch))]);
+% plot(absYnotch(1:round(N/10)))
+% legend();
 
-nnotch = filter(c,d,signal1);
-figure 
-plot(time1,signal1)
-axis([0,totaltime1,1.1*ymin1,1.1*ymax1]);
-title("Het originele signaal en het 2de genotchte signaal");
-xlabel("Tijd in s");
-hold on
-plot(time1, nnotch)
-legend();
-
-%FFT van matlabnotch volledig
-Ynotch = fft(nnotch);
-absYnotch = abs(Ynotch);
-figure
-plot(absX)
-title("FFT van signal1, met de notch van matlab");
-xlabel("Frequentie (Hz)");
-hold on
-plot(absYnotch)
-legend();
-
-%FFT van matlabnotch ingezoomed
-figure
-axis([0,100,0,1.1*max(absX)]);
-plot(absX(1:round(N/10)))
-title("Ingezoomt tussen 0Hz en 100Hz");
-xlabel("Frequentie (Hz)");
-hold on
-%axis([0,100,0,1.1*max(abs(Xnotch))]);
-plot(absYnotch(1:round(N/10)))
-legend();
-
-%Notch filter zelf gedesigned
-%Ingezoomde FFT 
-onotch = designedNotch(signal1);
-Znotch = fft(onotch);
-absZnotch = abs(Znotch);
-figure
-axis([0,100,0,1.1*max(absX)]);
-plot(absX(1:round(N/10)))
-hold on
-plot(absZnotch(1:round(N/10)))
-title("Ingezoomt tussen 0Hz en 100Hz, met designed notch filter");
-xlabel("Frequentie (Hz)");
-legend();
-
-%FFT met gedesignde notch maken
-figure
-plot(absX)
-title("FFT van signal1");
-xlabel("Frequentie (Hz)");
-hold on
-plot(absZnotch)
-legend();
-
-%notch filter op signaal in de tijd
-figure
-plot(time1,signal1)
-axis([0,totaltime1,1.1*ymin1,1.1*ymax1]);
-title("Het originele signaal en het genotchte signaal");
-xlabel("Tijd in s");
-hold on
-plot(time1, onotch)
-legend();
+% %Notch filter zelf gedesigned
+% %Ingezoomde FFT 
+% onotch = designedNotch(signal1);
+% Znotch = fft(onotch);
+% absZnotch = abs(Znotch);
+% figure
+% axis([0,100,0,1.1*max(absX)]);
+% plot(absX(1:round(N/10)))
+% hold on
+% plot(absZnotch(1:round(N/10)))
+% title("Ingezoomt tussen 0Hz en 100Hz, met designed notch filter");
+% xlabel("Frequentie (Hz)");
+% legend();
+% 
+% %FFT met gedesignde notch maken
+% figure
+% plot(absX)
+% title("FFT van signal1");
+% xlabel("Frequentie (Hz)");
+% hold on
+% plot(absZnotch)
+% legend();
+% 
+% %notch filter op signaal in de tijd
+% figure
+% plot(time1,signal1)
+% axis([0,totaltime1,1.1*ymin1,1.1*ymax1]);
+% title("Het originele signaal en het genotchte signaal");
+% xlabel("Tijd in s");
+% hold on
+% plot(time1, onotch)
+% legend();
 
 
