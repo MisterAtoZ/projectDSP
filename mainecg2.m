@@ -20,7 +20,7 @@ totaltime = Ts*m;
 
 time = linspace(0,totaltime,m);
 plot(time,signal)
-axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
+axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
@@ -48,10 +48,12 @@ xlabel("Frequentie (Hz)");
 
 %% 2.b) Filter design
 figure
-%In the frequency spectrum, we powerline noise at 60Hz
-%There appear to also be 2 harmonic compenents, at 180Hz(=3*60Hz) and at
-%300Hz(=5*60Hz).
-%We design 3 notch-filters to remove these 3 components.
+%In the frequency spectrum, we powerline noise at 50Hz
+%There are no extra harmonics of 50Hz in this spectrum, this is because the
+%third harmonic is 3*50Hz=150Hz and the max frequency without any aliasing
+%is  204.73/2=102.36. This means that 150Hz will never be reached and there
+%will not be any harmonics of 50Hz visible in the signal.
+%We design a notch-filters to remove this component.
 
 %Define frequencies to be removed:
 f0 = 50;
@@ -102,7 +104,7 @@ figure
 subplot(2,1,1)
 plot(time,signal)
 time = linspace(0,totaltime,m);
-axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
+axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
@@ -110,7 +112,7 @@ title("ECG2");
 subplot(2,1,2)
 plot(time,signal0)
 time = linspace(0,totaltime,m);
-axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
+axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
@@ -120,7 +122,7 @@ title("ECG2");
 figure
 subplot(4,1,1)
 plot(time,signal)
-axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
+axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
@@ -129,7 +131,7 @@ subplot(4,1,2)
 b = [1/4, 1/4, 1/4, 1/4];
 avgSignal = filter(b,1,signal);
 plot(time,avgSignal)
-axis([0,totaltime,1.1*min(avgSignal),1.1*max(avgSignal)]);
+axis([0,totaltime*0.05,1.1*min(avgSignal),1.1*max(avgSignal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
@@ -138,7 +140,7 @@ avgSignal = filter(b0,a0,avgSignal);
 
 subplot(4,1,3)
 plot(time,avgSignal)
-axis([0,totaltime,1.1*sig_min,1.1*max(avgSignal)]);
+axis([0,totaltime*0.05,1.1*sig_min,1.1*max(avgSignal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG2");
