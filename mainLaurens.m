@@ -1,6 +1,6 @@
 close all
 %% 1)Give sample time domain signal:
-%Signal
+%Signal of ecg1
 signal = load('ecg.mat');
 signal = signal.ecg;
 
