@@ -154,6 +154,67 @@ ylabel("Signal amplitude");
 title("ECG");
 
 %% 7)Resample
+%The highest useful frequency:
+f_useful = 50;  %If this is <50, the entire signal is ruined
+%The corresponding new sample frequency:
+fs_new = 2 * f_useful;
 
+%Find decimation and interpolation values:
+proportion = fs_new / fs;
+[I,D] = findInterpolationDecimation(proportion,3);
+I = double(I);
+D = double(D);
 
+%For any resampling, first do the interpolation
+resampledSignal = upsample(signal,I);
 
+%Next, use a low pass filter to prevent aliasing
+%1) Calculated stopband frequencies for I and D:
+fs_I = fs * I;          %Sample frequency after interpolation: Fy = Fx * I
+fn_I = fs_I / (2*I);    %Stopband frequency of the new signal = Fy / (2I)
+fs_D = fs_I / D;        %Sample frequency after decimation: Fy = Fx / D
+fn_D = fs_D / 2;            %Stoband frequency of the new signal = Fy / 2
+
+%The required minimal stopband frequency then is:
+fstop = min(fn_I,fn_D);
+df = 5;                %Transition band width in Hz
+                        %This gives a cutoff frequency of:
+                        %(this is the case for a transition band of 10Hz)
+wc = (fstop + (fstop - df)) / fs_I * pi;
+%wc = 0.25*pi;
+%The low pass filters needs to be a IIR filter.
+%For the formula, please refer to the lab report:
+Ts_I = 1 / fs_I;
+Ohm = (2 / Ts_I) * tan(wc / 2);
+b = [Ohm * Ts_I, Ohm * Ts_I];
+a = [Ohm * Ts_I + 2, Ohm * Ts_I - 2];
+fvtool(b,a);
+freqz(b,a);
+resampledSignal = downsample(resampledSignal,D);
+
+figure
+subplot(2,1,1)
+time = linspace(0,totaltime,m);
+plot(time,signal)
+axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
+xlabel("Time in s");
+ylabel("Signal amplitude");
+title("ECG");
+
+subplot(2,1,2)
+totalTime2 = fs_new * length(resampledSignal);
+time2 = linspace(0,totalTime2,length(resampledSignal));
+plot(time2,resampledSignal)
+axis([0,totalTime2,1.1*min(resampledSignal),1.1*max(resampledSignal)]);
+xlabel("Time in s");
+ylabel("Signal amplitude");
+title("ECG");
+
+n2=2^nextpow2(length(resampledSignal)); %Efficiently calculate FFT using N = power of 2 
+X_res = fft(resampledSignal,n2)/n2; %MATLAB requires this get the correct amplitude
+X_res = abs(X_res); %Absolute value of the fft
+
+f2 = fs_new*(0:(n2/2))/n2;
+X_res = X_res(1:n2/2+1);
+figure
+plot(f2,X_res)
