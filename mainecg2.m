@@ -95,8 +95,12 @@ X0 = X0(1:n/2+1);
 
 subplot(2,1,1)
 plot(f,X_plot)
+xlabel("Frequentie in Hz");
+title("Originele ECG2");
 subplot(2,1,2)
 plot(f,X0)
+xlabel("Frequentie in Hz");
+title("50Hz notch filter ECG2");
 
 %Time-domain signals:
 figure
@@ -107,7 +111,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG2");
+title("Originele ECG2");
 
 subplot(2,1,2)
 plot(time,signal0)
@@ -115,7 +119,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG2");
+title("50Hz notch filter ECG2");
 
 %% 5a) FIR Low-frequency drift removal
 %Dit werkt al best goed(des te beter!): MA-filter met de IIR daarachter

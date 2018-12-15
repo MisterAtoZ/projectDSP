@@ -111,12 +111,20 @@ X1 = X1(1:n/2+1);
 X2 = X2(1:n/2+1);
 subplot(4,1,1)
 plot(f,X_plot)
+xlabel("Frequency in Hertz");
+title("original ECG");
 subplot(4,1,2)
 plot(f,X0)
+xlabel("Frequency in Hertz");
+title("60Hz notch filter ECG");
 subplot(4,1,3)
 plot(f,X1)
+xlabel("Frequency in Hertz");
+title("60Hz and 180Hz notch filter ECG");
 subplot(4,1,4)
 plot(f,X2)
+xlabel("Frequency in Hertz");
+title("60Hz, 180Hz and 300Hz notch filter ECG");
 
 %Time-domain signals:
 figure
@@ -127,7 +135,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("Originele ECG");
 
 subplot(4,1,2)
 plot(time,signal0)
@@ -135,7 +143,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("60Hz notch filter ECG");
 
 subplot(4,1,3)
 plot(time,signal1)
@@ -143,7 +151,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("60Hz and 180Hz notch filter ECG");
 
 subplot(4,1,4)
 plot(time,signal2)
@@ -151,7 +159,7 @@ time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("60Hz, 180Hz and 300Hz notch filter ECG");
 
 %% 7)Resample
 %The highest useful frequency:
