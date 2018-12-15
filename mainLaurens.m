@@ -153,51 +153,7 @@ xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG");
 
-%% 5a) FIR Low-frequency drift removal
-%Dit werkt al best goed: MA-filter met de IIR daarachter
-figure
-subplot(4,1,1)
-plot(time,signal)
-axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG");
+%% 7)Resample
 
-subplot(4,1,2)
-b = [1/4, 1/4, 1/4, 1/4];
-avgSignal = filter(b,1,signal);
-plot(time,avgSignal)
-axis([0,totaltime,1.1*min(avgSignal),1.1*max(avgSignal)]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG");
-
-avgSignal = filter(b0,a0,avgSignal);
-avgSignal = filter(b1,a1,avgSignal);
-avgSignal = filter(b2,a2,avgSignal);
-
-subplot(4,1,3)
-plot(time,avgSignal)
-axis([0,totaltime,1.1*sig_min,1.1*max(avgSignal)]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG");
-
-
-%% BP Filter:
-%We hebben nu 2 cutoff frequenties: wc1 en wc2:
-f_pass1 = 40;
-f_stop1 = 60;
-f_pass2 = 0;
-f_stop2 = 10;
-w1s=f_stop1*pi;     %Stopband1: [w1s,pi]
-w1p=f_pass1*pi;     %Passband1: [0,w1p]
-w2p=f_pass2*pi;     %Passband2: [0,w2p]
-w2s=f_stop2*pi;     %Stopband2: [w2s,pi]
-% cut-off frequency halfway transition band
-wc1=(w1p+w1s)/2;
-wc2=(w2p+w2s)/2;
-
-dw=min(w1p-w1s,w2s-w2p);
 
 
