@@ -56,4 +56,44 @@ fvtool(zeros,poles)
 figure
 %FFT of the signal after 
 %try different angles:
+X_old = fft(signal);
+X_new = fft(filteredSignal);
+subplot(4,1,1)
+plot(abs(X_old))
+%Belangrijk: We mogen maar kijken tot fs, anders krijg je enkel spiegeling
+axis([0,fs,0,1.1*max(abs(X_old))]);
+subplot(4,1,2)
+plot(abs(X_new))
+axis([0,fs,0,1.1*max(abs(X_new))]);
+
+%Poging om nu de harmonische weg te filteren
+subplot(4,1,3)
+f0 = 3*60;
+hoek = (pi/fn) * f0;
+zeros = [1 -2*cos(hoek) 1];
+poles = [1 -2*a*cos(hoek) a*a];
+
+filteredSignal = filter(zeros,poles,filteredSignal);
+X_new2 = fft(filteredSignal);
+plot(abs(X_new2))
+axis([0,fs*2.4,0,1.1*max(abs(X_new2))]);
+
+subplot(4,1,4)
+f0 = 5*60;
+hoek = (pi/fn) * f0;
+zeros = [1 -2*cos(hoek) 1];
+poles = [1 -2*a*cos(hoek) a*a];
+
+filteredSignal = filter(zeros,poles,filteredSignal);
+X_new3 = fft(filteredSignal);
+plot(abs(X_new3))
+axis([0,fs,0,1.1*max(abs(X_new3))]);
+
+%Kijk naar het tijdsdomein
+figure
+plot(time,filteredSignal)
+hold on
+plot(time, signal)
+axis([0,totaltime,1.1*min(filteredSignal),1.1*max(filteredSignal)]);
+xlabel("Time in s");
 
