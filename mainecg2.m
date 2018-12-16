@@ -46,7 +46,7 @@ title("Frequency spectrum of the ECG2");
 legend("Absolute value");
 xlabel("Frequentie (Hz)");
 
-%% 2.b) Filter design
+%% 2.b) Filter design 
 figure
 %In the frequency spectrum, we powerline noise at 50Hz
 %There are no extra harmonics of 50Hz in this spectrum, this is because the
@@ -76,46 +76,47 @@ zplane(b0,a0);
 %% 3) Differential equations and direct form II schematic
 
 %% 4) Impulse and frequency response
-%These will only be calculated for the first filter (for 60Hz)
-figure
-freqz(b0,a0,1024);
-fvtool(b0,a0)
-%[H,W] = freqz(b0,a0,1024);
-%plot(W/pi,20*log10(abs(H)));
-
-figure
-impz(b0,a0);
+% %These will only be calculated for the first filter (for 50Hz)
+% figure
+% freqz(b0,a0,1024);
+% fvtool(b0,a0)
+% %[H,W] = freqz(b0,a0,1024);
+% %plot(W/pi,20*log10(abs(H)));
+% 
+% figure
+% impz(b0,a0);
 %% 5)Filtering:
-signal0 = filter(b0,a0,signal);
-
-%Spectrum-analysis after filtering:
-figure
-X0 = abs(fft(signal0,n) / n);
-X0 = X0(1:n/2+1);
-
-subplot(2,1,1)
-plot(f,X_plot)
-subplot(2,1,2)
-plot(f,X0)
-
-%Time-domain signals:
-figure
-
-subplot(2,1,1)
-plot(time,signal)
-time = linspace(0,totaltime,m);
-axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG2");
-
-subplot(2,1,2)
-plot(time,signal0)
-time = linspace(0,totaltime,m);
-axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG2");
+% %Ook niet nodig (is voor de notch filter toe te voegen)
+% signal0 = filter(b0,a0,signal);
+% 
+% %Spectrum-analysis after filtering:
+% figure
+% X0 = abs(fft(signal0,n) / n);
+% X0 = X0(1:n/2+1);
+% 
+% subplot(2,1,1)
+% plot(f,X_plot)
+% subplot(2,1,2)
+% plot(f,X0)
+% 
+% %Time-domain signals:
+% figure
+% 
+% subplot(2,1,1)
+% plot(time,signal)
+% time = linspace(0,totaltime,m);
+% axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
+% xlabel("Time in s");
+% ylabel("Signal amplitude");
+% title("ECG2");
+% 
+% subplot(2,1,2)
+% plot(time,signal0)
+% time = linspace(0,totaltime,m);
+% axis([0,totaltime*0.05,1.1*sig_min,1.1*sig_max]);
+% xlabel("Time in s");
+% ylabel("Signal amplitude");
+% title("ECG2");
 
 %% 5a) FIR Low-frequency drift removal
 %Dit werkt al best goed(des te beter!): MA-filter met de IIR daarachter
@@ -190,7 +191,8 @@ plot(time,signal)
 axis([0,totaltime*0.05,1.1*min(min(signal),min(signal_bp)),1.1*max(max(signal),max(signal_bp))]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("ECG2");
+legend();
 
 figure
 X_bp = abs(fft(signal_bp,n) / n);
@@ -221,3 +223,55 @@ axis([0,totaltime*0.05,1.1*min(avgSignal),1.1*max(avgSignal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
 title("ECG");
+
+%% 8)Downsampeling
+figure
+D=5; %de bemonsteringsfrequentie wordt verlaagd met deze factor
+fsd=fs/D;
+Tsd = 1/fsd;
+
+%Nyquist frequency
+fnd = fsd / 2;
+
+%Need a LPF first to make shure there are no terugvouw frequenties
+alfa=52; %M=105
+omega=fnd/fn*pi; % De hoek van de maximumsamplebare frequentie berekenen 
+b = omega/pi*sinc(omega/pi*(-alfa:alfa)).*hamming(2*alfa+1)';
+
+fvtool(b,1)
+signalf=filter(b,1,signal);
+
+%signal downsampeling
+signald=downsample(signalf,D);
+
+%Extrema and length of the raw signal
+sig_maxd = max(signald);
+sig_mind = min(signald);
+md = length(signald);
+%Plot the signal in the time domain
+totaltimed = Tsd*m;
+
+timed = linspace(0,totaltimed,md);
+plot(timed,signald)
+axis([0,totaltimed*0.05,1.1*sig_mind,1.1*sig_maxd]);
+xlabel("Time in s");
+ylabel("Signal amplitude");
+title("Downsampled ECG2");
+
+%FFT van het gedownsamplede signaal
+figure
+%Calculate the DFT of the signal using the FFT:
+Xd = fft(signald,n)/n; %MATLAB requires this get the correct amplitude
+X_absd = abs(Xd); %Absolute value of the fft
+
+%Rescaling of the output:
+%Rescaling based on reccomendations from https://nl.mathworks.com/help/matlab/ref/fft.html
+fd = fsd*(0:(n/2))/n;
+X_plotd = X_absd(1:n/2+1);
+
+%Plot the frequency spectrum
+plot(fd,X_plotd)
+title("Frequency spectrum of the ECG2");
+legend("Absolute value");
+xlabel("Frequentie (Hz)");
+
