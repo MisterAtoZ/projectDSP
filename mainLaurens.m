@@ -155,7 +155,7 @@ title("ECG");
 
 %% 7)Resample
 %The highest useful frequency:
-f_useful = 50;  %If this is <50, the entire signal is ruined
+f_useful = 35;  %If this is <50, the entire signal is ruined
 %The corresponding new sample frequency:
 fs_new = 2 * f_useful;
 
@@ -167,6 +167,7 @@ D = double(D);
 
 %For any resampling, first do the interpolation
 resampledSignal = upsample(signal,I);
+
 
 %Next, use a low pass filter to prevent aliasing
 %1) Calculated stopband frequencies for I and D:
@@ -190,6 +191,8 @@ b = [Ohm * Ts, Ohm * Ts];
 a = [Ohm * Ts + 2, Ohm * Ts - 2];
 fvtool(b,a);
 freqz(b,a);
+
+resampledSignal = filter(b,a,resampledSignal);
 resampledSignal = downsample(resampledSignal,D);
 
 figure
@@ -202,7 +205,7 @@ ylabel("Signal amplitude");
 title("ECG");
 
 subplot(2,1,2)
-totalTime2 = fs_new * length(resampledSignal);
+totalTime2 = 1/fs_new * length(resampledSignal);
 time2 = linspace(0,totalTime2,length(resampledSignal));
 plot(time2,resampledSignal)
 axis([0,totalTime2,1.1*min(resampledSignal),1.1*max(resampledSignal)]);
