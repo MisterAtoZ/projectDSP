@@ -155,7 +155,7 @@ title("ECG");
 
 %% 7)Resample
 %The highest useful frequency:
-f_useful = 35;  %If this is <50, the entire signal is ruined
+f_useful = 40;  %35 provides a good result
 %The corresponding new sample frequency:
 fs_new = 2 * f_useful;
 
@@ -179,16 +179,15 @@ fn_D = fs_D / 2;            %Stoband frequency of the new signal = Fy / 2
 %The required minimal stopband frequency then is:
 fstop = min(fn_I,fn_D);
 df = 5;                %Transition band width in Hz
-                        %This gives a cutoff frequency of:
-                        %(this is the case for a transition band of 10Hz)
+                       %This gives a cutoff frequency of:
 wc = (fstop + (fstop - df)) / fs_I * pi;
-%wc = 0.25*pi;
+
 %The low pass filters needs to be a IIR filter.
 %For the formula, please refer to the lab report:
 Ts_I = 1 / fs_I;
-Ohm = (2 / Ts) * tan(wc / 2);
-b = [Ohm * Ts, Ohm * Ts];
-a = [Ohm * Ts + 2, Ohm * Ts - 2];
+Ohm = (2 / Ts_I) * tan(wc / 2);
+b = [Ohm * Ts_I, Ohm * Ts_I];
+a = [Ohm * Ts_I + 2, Ohm * Ts_I - 2];
 fvtool(b,a);
 freqz(b,a);
 
@@ -221,3 +220,6 @@ f2 = fs_new*(0:(n2/2))/n2;
 X_res = X_res(1:n2/2+1);
 figure
 plot(f2,X_res)
+xlabel("Frequency in Hz");
+ylabel("Normalized magnitude");
+title("Frequency spectrum after resampling");

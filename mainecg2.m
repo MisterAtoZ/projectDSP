@@ -159,7 +159,7 @@ plot(f,X_avg)
 f_pass1 = 30;
 f_stop1 = 35;
 f_pass2 = 0;
-f_stop2 = 3;
+f_stop2 = 4;
 w1s=f_stop1/fn*pi;     %Stopband1: [w1s,pi]
 w1p=f_pass1/fn*pi;     %Passband1: [0,w1p]
 w2p=f_pass2/fn*pi;     %Passband2: [0,w2p]
@@ -170,19 +170,26 @@ wc2=(w2p+w2s)/2;
 
 dw=min(w1s-w1p,w2s-w2p);
 As = 60;
+
 M=(As-7.95)/(2.285*dw) + 1;
 M = roundToNextOddInteger(M);
-beta = 0.1102*(As-8.7);
-alfa = (M-1)/2;
+if As >= 50
+    beta = 0.1102*(As-8.7);
+elseif (As > 21) && (As < 50)
+    beta = 0.5842*(As-21)^0.4 + 0.07886*(As-21);
+else
+    error('Error: the chosen As=%d is smaller than 22\n',As);
+end
+W = kaiser(M,beta);
 
+alfa = (M-1)/2;
 b_lp1 = wc1 / pi * sinc(wc1 / pi * (-alfa:alfa));
 b_lp2 = wc2 / pi * sinc(wc2 / pi * (-alfa:alfa));
-W_kaiser = kaiser(M,beta);
-b_bp = (b_lp1 - b_lp2).*W_kaiser';
+
+b_bp = (b_lp1 - b_lp2).*W';
 fvtool(b_bp);
 
 figure
-%%%!!!!WAAROM MOET IK HIER *-1 doen?
 signal_bp = filter(b_bp,1,signal);
 plot(time,signal_bp)
 hold on
@@ -195,11 +202,14 @@ title("ECG");
 figure
 X_bp = abs(fft(signal_bp,n) / n);
 X_bp = X_bp(1:n/2+1);
-subplot(2,1,1)
 plot(f,X_plot)
-subplot(2,1,2)
+hold on
 plot(f,X_bp)
-
+hold off
+xlabel("Frequency in Hz",'fontSize',14)
+ylabel("Normalized magnitude",'fontSize',14)
+title("Frequency spectrum before and after bandpass")
+legend("Before bandpass","After bandpass",'fontSize',14)
 figure
 subplot(3,1,1)
 plot(time,signal)
