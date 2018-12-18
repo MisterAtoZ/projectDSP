@@ -36,14 +36,15 @@ X_imag = imag(X); %Imaginary component of the fft
 X_abs = abs(X); %Absolute value of the fft
 
 %Rescaling of the output:
-%Rescaling based on reccomendations from https://nl.mathworks.com/help/matlab/ref/fft.html
+%Rescaling based on reccomendations from
+%https://nl.mathworks.com/help/matlab/ref/fft.html
 f = fs*(0:(n/2))/n;
 X_plot = X_abs(1:n/2+1);
 
 %Plot the frequency spectrum
 plot(f,X_plot)
 title("Frequency spectrum of the ECG");
-legend("Absolute value");
+legend("Normalized magnitude");
 xlabel("Frequentie (Hz)");
 
 %% 2.b) Filter design
@@ -55,8 +56,8 @@ figure
 
 %Define frequencies to be removed:
 f0 = 60;
-f1 = 3*60;
-f2 = 5*60;
+f1 = 3*f0;
+f2 = 5*f0;
 
 %Angles on the unit circle for these frequencies:
 theta0 = (pi/fn) * f0;
@@ -83,15 +84,11 @@ zplane(b1,a1);
 subplot(1,3,3);
 zplane(b2,a2);
 
-%% 3) Differential equations and direct form II schematic
-
 %% 4) Impulse and frequency response
 %These will only be calculated for the first filter (for 60Hz)
 figure
 freqz(b0,a0,1024);
 fvtool(b0,a0)
-%[H,W] = freqz(b0,a0,1024);
-%plot(W/pi,20*log10(abs(H)));
 
 figure
 impz(b0,a0);
@@ -123,39 +120,35 @@ figure
 
 subplot(4,1,1)
 plot(time,signal)
-time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("Original ECG");
 
 subplot(4,1,2)
 plot(time,signal0)
-time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("ECG with 60Hz notch filter");
 
 subplot(4,1,3)
 plot(time,signal1)
-time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("ECG with 60Hz and 180Hz notch filter");
 
 subplot(4,1,4)
 plot(time,signal2)
-time = linspace(0,totaltime,m);
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("ECG with 60H, 180Hz and 300Hz notch filter");
 
 %% 7)Resample
 %The highest useful frequency:
-f_useful = 35;  %If this is <50, the entire signal is ruined
+f_useful = 40;  %40 provides a good result
 %The corresponding new sample frequency:
 fs_new = 2 * f_useful;
 
@@ -179,30 +172,27 @@ fn_D = fs_D / 2;            %Stoband frequency of the new signal = Fy / 2
 %The required minimal stopband frequency then is:
 fstop = min(fn_I,fn_D);
 df = 5;                %Transition band width in Hz
-                        %This gives a cutoff frequency of:
-                        %(this is the case for a transition band of 10Hz)
+                       %This gives a cutoff frequency of:
 wc = (fstop + (fstop - df)) / fs_I * pi;
-%wc = 0.25*pi;
+
 %The low pass filters needs to be a IIR filter.
 %For the formula, please refer to the lab report:
 Ts_I = 1 / fs_I;
-Ohm = (2 / Ts) * tan(wc / 2);
-b = [Ohm * Ts, Ohm * Ts];
-a = [Ohm * Ts + 2, Ohm * Ts - 2];
+Ohm = (2 / Ts_I) * tan(wc / 2);
+b = [Ohm * Ts_I, Ohm * Ts_I];
+a = [Ohm * Ts_I + 2, Ohm * Ts_I - 2];
 fvtool(b,a);
-freqz(b,a);
 
 resampledSignal = filter(b,a,resampledSignal);
 resampledSignal = downsample(resampledSignal,D);
 
 figure
 subplot(2,1,1)
-time = linspace(0,totaltime,m);
 plot(time,signal)
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("Original ECG signal");
+title("Original ECG");
 
 subplot(2,1,2)
 totalTime2 = 1/fs_new * length(resampledSignal);
@@ -211,7 +201,7 @@ plot(time2,resampledSignal)
 axis([0,totalTime2,1.1*min(resampledSignal),1.1*max(resampledSignal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("downsampled ECG signal");
+title("Downsampled ECG");
 
 n2=2^nextpow2(length(resampledSignal)); %Efficiently calculate FFT using N = power of 2 
 X_res = fft(resampledSignal,n2)/n2; %MATLAB requires this get the correct amplitude
@@ -221,6 +211,6 @@ f2 = fs_new*(0:(n2/2))/n2;
 X_res = X_res(1:n2/2+1);
 figure
 plot(f2,X_res)
-xlabel("Frequentie in Hz");
-ylabel("Signal amplitude");
-title("FFT van downsampled ECG signal");
+xlabel("Frequency in Hz");
+ylabel("Normalized magnitude");
+title("Frequency spectrum after resampling");
