@@ -1,3 +1,8 @@
+%{
+mainecg2.m
+Autor: Laurens Le Jeune and Jonathan Luijsmans
+%}
+
 close all
 %% 1)Give sample time domain signal:
 %Signal of ecg2

@@ -1,3 +1,8 @@
+%{
+roundToNextOddInteger.m
+Autor: Laurens Le Jeune and Jonathan Luijsmans
+%}
+
 function m = roundToNextOddInteger(n)
 %This function rounds up a given number n. 
     n = ceil(n);

@@ -1,3 +1,8 @@
+%{
+findInterpolationDecimation.m
+Autor: Laurens Le Jeune and Jonathan Luijsmans
+%}
+
 function [I,D] = findInterpolationDecimation(proportion, accuracy)
 
     proportion = round(proportion,accuracy);
