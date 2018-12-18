@@ -202,7 +202,7 @@ plot(time,signal)
 axis([0,totaltime,1.1*sig_min,1.1*sig_max]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("Original ECG signal");
 
 subplot(2,1,2)
 totalTime2 = 1/fs_new * length(resampledSignal);
@@ -211,7 +211,7 @@ plot(time2,resampledSignal)
 axis([0,totalTime2,1.1*min(resampledSignal),1.1*max(resampledSignal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("downsampled ECG signal");
 
 n2=2^nextpow2(length(resampledSignal)); %Efficiently calculate FFT using N = power of 2 
 X_res = fft(resampledSignal,n2)/n2; %MATLAB requires this get the correct amplitude
@@ -221,3 +221,6 @@ f2 = fs_new*(0:(n2/2))/n2;
 X_res = X_res(1:n2/2+1);
 figure
 plot(f2,X_res)
+xlabel("Frequentie in Hz");
+ylabel("Signal amplitude");
+title("FFT van downsampled ECG signal");

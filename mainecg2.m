@@ -159,7 +159,7 @@ plot(f,X_avg)
 f_pass1 = 30;
 f_stop1 = 35;
 f_pass2 = 0;
-f_stop2 = 3;
+f_stop2 = 4;
 w1s=f_stop1/fn*pi;     %Stopband1: [w1s,pi]
 w1p=f_pass1/fn*pi;     %Passband1: [0,w1p]
 w2p=f_pass2/fn*pi;     %Passband2: [0,w2p]
@@ -182,7 +182,6 @@ b_bp = (b_lp1 - b_lp2).*W_kaiser';
 fvtool(b_bp);
 
 figure
-%%%!!!!WAAROM MOET IK HIER *-1 doen?
 signal_bp = filter(b_bp,1,signal);
 plot(time,signal_bp)
 hold on
@@ -197,27 +196,33 @@ X_bp = abs(fft(signal_bp,n) / n);
 X_bp = X_bp(1:n/2+1);
 subplot(2,1,1)
 plot(f,X_plot)
+xlabel("Frequentie in Hz");
+ylabel("Signal amplitude");
+title("Originele ECG2-signaal");
 subplot(2,1,2)
 plot(f,X_bp)
+xlabel("Frequentie in Hz");
+ylabel("Signal amplitude");
+title("ECG2-signaal met bandpassfilter");
 
 figure
-subplot(3,1,1)
+subplot(2,1,1)
 plot(time,signal)
 axis([0,totaltime*0.05,1.1*min(signal),1.1*max(signal)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("Originele ECG2-signaal");
 
-subplot(3,1,2)
+subplot(2,1,2)
 plot(time,signal_bp)
 axis([0,totaltime*0.05,1.1*min(signal_bp),1.1*max(signal_bp)]);
 xlabel("Time in s");
 ylabel("Signal amplitude");
-title("ECG");
+title("ECG2-signaal met bandpassfilter");
 
-subplot(3,1,3)
-plot(time,avgSignal)
-axis([0,totaltime*0.05,1.1*min(avgSignal),1.1*max(avgSignal)]);
-xlabel("Time in s");
-ylabel("Signal amplitude");
-title("ECG");
+% subplot(3,1,3)
+% plot(time,avgSignal)
+% axis([0,totaltime*0.05,1.1*min(avgSignal),1.1*max(avgSignal)]);
+% xlabel("Time in s");
+% ylabel("Signal amplitude");
+% title("ECG2-signaal met MA-filter");
